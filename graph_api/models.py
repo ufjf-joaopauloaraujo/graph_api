@@ -6,3 +6,4 @@ class Vertex(models.Model):
 class Edge(models.Model):
     source = models.ForeignKey(Vertex, on_delete=models.CASCADE, related_name='outgoing_edges')
     target = models.ForeignKey(Vertex, on_delete=models.CASCADE, related_name='incoming_edges')
+    description = models.CharField(max_length=50)

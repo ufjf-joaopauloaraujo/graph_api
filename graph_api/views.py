@@ -51,4 +51,8 @@ class EdgeViewSet(viewsets.ModelViewSet):
 
 def graph_ui(request):
     vertices = Vertex.objects.all()
-    return render(request, 'graph_ui.html', {'vertices': vertices})
+    edges = Edge.objects.all()
+    return render(request, 'graph_ui.html', {
+        'vertices': list(vertices.values()),
+        'edges': list(edges.values())
+    })

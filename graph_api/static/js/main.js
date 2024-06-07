@@ -6,23 +6,26 @@ import {TextGeometry} from "three/addons/geometries/TextGeometry";
 import {FontLoader} from "three/addons/loaders/FontLoader";
 import ForceGraph from "force-graph";
 
-function vertexBuilder(id, color) {
+function vertexBuilder(id, name, color) {
   return {
     id,
+    name,
     color,
   };
 }
 
-function edgeBuilder(source, target, label) {
+function edgeBuilder(id, source, target, label) {
   return {
+    id,
     source,
     target,
     label
   }
 }
 
-function edgeBuilderWithCurvature(source, target, label, curvature) {
+function edgeWithCurvatureBuilder(id, source, target, label, curvature) {
   return {
+    id,
     source,
     target,
     label,
@@ -32,8 +35,8 @@ function edgeBuilderWithCurvature(source, target, label, curvature) {
 
 const state = {
   data: {
-    vertices: [vertexBuilder("obj1", "#ff0000"), vertexBuilder("obj2", "#ff0000"), vertexBuilder("obj3", "#00ff00")], // states
-    edges: [edgeBuilder("obj1", "obj2", ""), edgeBuilder("obj2", "obj3", ""), edgeBuilder("obj3", "obj1", "abc")], // program function
+    vertices: [], // states
+    edges: [], // program function
   },
   options: {
     mode: false, // true: 3D; false: 2D
@@ -43,6 +46,52 @@ const state = {
   }
 };
 
+verticesData.forEach(vertex => {
+  const {id, name} = vertex;
+  state.data.vertices.push(vertexBuilder(id, name, "#ff0000"));
+});
+
+function findVertexNameById(id) {
+  return state.data.vertices.find(v => v.id === id).name;
+}
+
+edgesData.forEach(edge => {
+  const {id, source_id, target_id, description} = edge;
+
+  const source = findVertexNameById(source_id);
+  const target = findVertexNameById(target_id);
+
+  state.data.edges.push(edgeBuilder(id, source, target, description));
+});
+
+const socket = new WebSocket('ws://' + window.location.host + '/ws/graph/');
+
+socket.onopen = (event) => {
+  console.log("Websocket connected");
+};
+
+socket.onmessage = (event) => {
+  const data = JSON.parse(event.data).data;
+  
+  console.log("data:", data);
+
+  if (data.type === 'vertex') {
+    state.data.vertices.push(vertexBuilder(data.obj.id, data.obj.name, "#ff0000"));
+  } else if (data.type === 'edge') {
+    const source = findVertexNameById(data.obj.source);
+    const target = findVertexNameById(data.obj.target);
+    state.data.edges.push(edgeBuilder(data.obj.id, source, target, data.obj.description));
+  }
+
+  console.log("state:", state);
+
+  refreshGraph();
+};
+
+socket.onclose = (event) => {
+  console.error('Chat socket closed unexpectedly');
+};
+
 function prepareGraph() {
   const nodes = [];
   const links = [];
@@ -50,7 +99,7 @@ function prepareGraph() {
     // Criar os nós
   state.data.vertices.forEach(vertex => {
     nodes.push({
-      id: vertex.id,
+      id: vertex.name,
       color: vertex.color,
     });
   });

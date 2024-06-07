@@ -28,6 +28,10 @@
 
   </script>
 
+  <script>
+    const verticesData = {{ vertices|safe }};
+    const edgesData = {{ edges|safe }};
+  </script>
   <script type="module" src="{% static 'js/main.js' %}"></script>
 
 </body>
