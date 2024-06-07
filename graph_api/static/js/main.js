@@ -64,33 +64,40 @@ edgesData.forEach(edge => {
   state.data.edges.push(edgeBuilder(id, source, target, description));
 });
 
-const socket = new WebSocket('ws://' + window.location.host + '/ws/graph/');
+function startWebsocket() {
+  let socket = new WebSocket('ws://' + window.location.host + '/ws/graph/');
 
-socket.onopen = (event) => {
-  console.log("Websocket connected");
-};
+  socket.onopen = (event) => {
+    console.log("Websocket connected");
+  };
 
-socket.onmessage = (event) => {
-  const data = JSON.parse(event.data).data;
-  
-  console.log("data:", data);
+  socket.onmessage = (event) => {
+    const data = JSON.parse(event.data).data;
+    
+    console.log("data:", data);
 
-  if (data.type === 'vertex') {
-    state.data.vertices.push(vertexBuilder(data.obj.id, data.obj.name, "#ff0000"));
-  } else if (data.type === 'edge') {
-    const source = findVertexNameById(data.obj.source);
-    const target = findVertexNameById(data.obj.target);
-    state.data.edges.push(edgeBuilder(data.obj.id, source, target, data.obj.description));
-  }
+    if (data.type === 'vertex') {
+      state.data.vertices.push(vertexBuilder(data.obj.id, data.obj.name, "#ff0000"));
+    } else if (data.type === 'edge') {
+      const source = findVertexNameById(data.obj.source);
+      const target = findVertexNameById(data.obj.target);
+      state.data.edges.push(edgeBuilder(data.obj.id, source, target, data.obj.description));
+    }
 
-  console.log("state:", state);
+    console.log("state:", state);
 
-  refreshGraph();
-};
+    refreshGraph();
+  };
 
-socket.onclose = (event) => {
-  console.error('Chat socket closed unexpectedly');
-};
+  socket.onclose = (event) => {
+    console.error('Chat socket closed unexpectedly');
+    // connection closed, discard old websocket and create a new one in 5s
+    socket = null;
+    setTimeout(startWebsocket, 5000);
+  };
+}
+
+startWebsocket();
 
 function prepareGraph() {
   const nodes = [];
