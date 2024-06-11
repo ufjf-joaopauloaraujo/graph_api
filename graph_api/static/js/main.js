@@ -6,29 +6,28 @@ import {TextGeometry} from "three/addons/geometries/TextGeometry";
 import {FontLoader} from "three/addons/loaders/FontLoader";
 import ForceGraph from "force-graph";
 
-function vertexBuilder(id, name, color) {
+function vertexBuilder(name, color) {
   return {
-    id,
     name,
     color,
   };
 }
 
-function edgeBuilder(id, source, target, label) {
+function edgeBuilder(name, source, target, description) {
   return {
-    id,
+    name,
     source,
     target,
-    label
+    description
   }
 }
 
-function edgeWithCurvatureBuilder(id, source, target, label, curvature) {
+function edgeWithCurvatureBuilder(name, source, target, description, curvature) {
   return {
-    id,
+    name,
     source,
     target,
-    label,
+    description,
     curvature
   }
 }
@@ -47,21 +46,21 @@ const state = {
 };
 
 verticesData.forEach(vertex => {
-  const {id, name} = vertex;
-  state.data.vertices.push(vertexBuilder(id, name, "#ff0000"));
+  const {name} = vertex;
+  state.data.vertices.push(vertexBuilder(name, "#ff0000"));
 });
 
-function findVertexNameById(id) {
-  return state.data.vertices.find(v => v.id === id).name;
+function findVertexNameById(name) {
+  return state.data.vertices.find(v => v.name === name);
 }
 
 edgesData.forEach(edge => {
-  const {id, source_id, target_id, description} = edge;
+  const {name, source_id, target_id, description} = edge;
 
-  const source = findVertexNameById(source_id);
-  const target = findVertexNameById(target_id);
+  // const source = findVertexNameById(source_id);
+  // const target = findVertexNameById(target_id);
 
-  state.data.edges.push(edgeBuilder(id, source, target, description));
+  state.data.edges.push(edgeBuilder(name, source_id, target_id, description));
 });
 
 function startWebsocket() {
@@ -77,11 +76,13 @@ function startWebsocket() {
     console.log("data:", data);
 
     if (data.type === 'vertex') {
-      state.data.vertices.push(vertexBuilder(data.obj.id, data.obj.name, "#ff0000"));
+      const {name} = data.obj;
+      state.data.vertices.push(vertexBuilder(name, "#ff0000"));
     } else if (data.type === 'edge') {
-      const source = findVertexNameById(data.obj.source);
-      const target = findVertexNameById(data.obj.target);
-      state.data.edges.push(edgeBuilder(data.obj.id, source, target, data.obj.description));
+      const {name, source, target, description} = data.obj;
+      // const source = findVertexNameById(data.obj.source);
+      // const target = findVertexNameById(data.obj.target);
+      state.data.edges.push(edgeBuilder(name, source, target, description));
     }
 
     console.log("state:", state);
@@ -96,6 +97,8 @@ function startWebsocket() {
     setTimeout(startWebsocket, 5000);
   };
 }
+
+console.log("state:", state);
 
 startWebsocket();
 
@@ -116,7 +119,8 @@ function prepareGraph() {
     if (edge) {
       links.push({
         curvature: 0.3,
-        ...edge
+        ...edge,
+        label: edge.description,
       });
     }
   });
