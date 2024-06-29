@@ -271,7 +271,7 @@ function refreshGraph() {
       }
       if (state.options.textNode) {
         Graph.nodeThreeObject(node => {
-          const sprite = new SpriteText(node.id);
+          const sprite = new SpriteText(node.name);
           sprite.material.depthWrite = false; // make sprite background transparent
           sprite.color = node.color;
           sprite.textHeight = 8;
