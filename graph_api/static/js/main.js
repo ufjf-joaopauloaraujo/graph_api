@@ -279,6 +279,8 @@ function refreshGraph() {
         })
       }
 
+      setTimeout(() => Graph.zoomToFit(5000, 1), 1500);
+
       gui = new GUI();
 
       gui.add( state.options, '3dMode' ).onChange( refreshGraph );
@@ -371,6 +373,8 @@ function refreshGraph() {
         })
         .linkDirectionalArrowRelPos(1)
         .graphData(graph);
+
+        setTimeout(() => Graph.zoomToFit(5000, 100), 2000);
 
         gui = new GUI();
 
