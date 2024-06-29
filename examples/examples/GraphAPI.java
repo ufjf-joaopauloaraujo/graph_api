@@ -40,6 +40,10 @@ public class GraphAPI {
     }
 
     public String postVertex(Object name) {
+        return postVertex(name, VertexColor.WHITE);
+    }
+
+    public String postVertex(Object name, VertexColor color) {
         try {
             URL apiUrl = new URL(VERTEX_API_URL);
             HttpURLConnection connection = (HttpURLConnection) apiUrl.openConnection();
@@ -47,7 +51,7 @@ public class GraphAPI {
             connection.setRequestProperty("Content-Type", "application/json");
             connection.setDoOutput(true);
 
-            String requestBody = String.format("{ \"name\": \"%s\" }", name);
+            String requestBody = String.format("{ \"name\": \"%s\", \"color\": \"%s\" }", name, color);
 
             // Write request body
             try (OutputStream os = connection.getOutputStream()) {
@@ -111,4 +115,30 @@ public class GraphAPI {
 
     // Other methods for handling REST requests go here
     // ...
+
+    public enum VertexColor {
+        RED("red"),
+        YELLOW("yellow"),
+        BLUE("blue"),
+        ORANGE("orange"),
+        GREEN("green"),
+        PURPLE("purple"),
+        PINK("pink"),
+        BROWN("brown"),
+        GREY("grey"),
+        CYAN("cyan"),
+        WHITE("white"),
+        BEIGE("beige");
+    
+        private final String name;
+    
+        private VertexColor(String s) {
+            name = s;
+        }
+    
+        @Override
+        public String toString() {
+            return name;
+        }
+    }
 }

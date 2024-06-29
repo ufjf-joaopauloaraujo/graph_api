@@ -21,3 +21,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('graph_api.urls')),  # Include app-specific URLs
 ]
+urlpatterns += [
+    path('accounts/', include('django.contrib.auth.urls')),
+]

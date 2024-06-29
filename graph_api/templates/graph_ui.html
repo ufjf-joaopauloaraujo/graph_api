@@ -1,17 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Graph UI</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+{% extends "base_generic.html" %}
 
-    {% load static %}
-    <link rel="icon" href="{% static 'favicon.ico' %}" type="image/x-icon">
-</head>
-<body>
-
-  {% comment %} <div v-if="mode" id="3d-graph"></div> {% endcomment %}
-  <div v-else id="graph"></div>
+{% block content %}
+  <div id="graph"></div>
 
   <script type="importmap">
     {
@@ -27,12 +17,10 @@
     }
 
   </script>
-
+  {% load static %}
   <script>
     const verticesData = {{ vertices|safe }};
     const edgesData = {{ edges|safe }};
   </script>
   <script type="module" src="{% static 'js/main.js' %}"></script>
-
-</body>
-</html>
+{% endblock %}

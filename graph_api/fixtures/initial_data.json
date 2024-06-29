@@ -3,14 +3,45 @@
       "model": "graph_api.vertex",
       "pk": 1,
       "fields": {
-          "name": "Vertex A"
+          "name": "4",
+          "color": "green"
       }
   },
   {
       "model": "graph_api.vertex",
       "pk": 2,
       "fields": {
-          "name": "Vertex B"
+          "name": "5",
+          "color": "red"
+      }
+  },
+  {
+      "model": "graph_api.vertex",
+      "pk": 3,
+      "fields": {
+          "name": "1"
+      }
+  },
+  {
+      "model": "graph_api.vertex",
+      "pk": 4,
+      "fields": {
+          "name": "6"
+      }
+  },
+  {
+      "model": "graph_api.vertex",
+      "pk": 5,
+      "fields": {
+          "name": "3"
+      }
+  },
+  {
+      "model": "graph_api.vertex",
+      "pk": 6,
+      "fields": {
+          "name": "8",
+          "color": "blue"
       }
   },
   {
@@ -19,7 +50,52 @@
       "fields": {
           "source": 1,
           "target": 2,
-          "description": "abc"
+          "description": "4"
       }
+  },
+  {
+      "model": "graph_api.edge",
+      "pk": 2,
+      "fields": {
+          "source": 1,
+          "target": 3,
+          "description": "2"
+      }
+  },
+  {
+      "model": "graph_api.edge",
+      "pk": 3,
+      "fields": {
+          "source": 2,
+          "target": 3,
+          "description": "5"
+      }
+  },
+  {
+      "model": "graph_api.edge",
+      "pk": 4,
+      "fields": {
+          "source": 3,
+          "target": 5,
+          "description": "2"
+      }
+  },
+  {
+      "model": "graph_api.edge",
+      "pk": 5,
+      "fields": {
+          "source": 5,
+          "target": 4,
+          "description": "9"
+      }
+  },
+  {
+    "model": "graph_api.edge",
+    "pk": 6,
+    "fields": {
+        "source": 5,
+        "target": 6,
+        "description": "5"
+    }
   }
 ]

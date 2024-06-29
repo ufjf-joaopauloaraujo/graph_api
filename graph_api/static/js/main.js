@@ -5,16 +5,19 @@ import {CSS2DRenderer} from "three/addons/renderers/CSS2DRenderer.js";
 import {TextGeometry} from "three/addons/geometries/TextGeometry";
 import {FontLoader} from "three/addons/loaders/FontLoader";
 import ForceGraph from "force-graph";
+import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 
-function vertexBuilder(name, color) {
+function vertexBuilder(id, name, color) {
   return {
+    id,
     name,
     color,
   };
 }
 
-function edgeBuilder(name, source, target, description) {
+function edgeBuilder(id, name, source, target, description) {
   return {
+    id,
     name,
     source,
     target,
@@ -24,6 +27,7 @@ function edgeBuilder(name, source, target, description) {
 
 function edgeWithCurvatureBuilder(name, source, target, description, curvature) {
   return {
+    id,
     name,
     source,
     target,
@@ -38,7 +42,7 @@ const state = {
     edges: [], // program function
   },
   options: {
-    mode: false, // true: 3D; false: 2D
+    '3dMode': false, // true: 3D; false: 2D
     particles: true,
     focusNode: false,
     textNode: false,
@@ -46,8 +50,8 @@ const state = {
 };
 
 verticesData.forEach(vertex => {
-  const {name} = vertex;
-  state.data.vertices.push(vertexBuilder(name, "#ff0000"));
+  const {id, name, color} = vertex;
+  state.data.vertices.push(vertexBuilder(id, name, color));
 });
 
 function findVertexNameById(name) {
@@ -55,12 +59,12 @@ function findVertexNameById(name) {
 }
 
 edgesData.forEach(edge => {
-  const {name, source_id, target_id, description} = edge;
+  const {id, name, source_id, target_id, description} = edge;
 
   // const source = findVertexNameById(source_id);
   // const target = findVertexNameById(target_id);
 
-  state.data.edges.push(edgeBuilder(name, source_id, target_id, description));
+  state.data.edges.push(edgeBuilder(id, name, source_id, target_id, description));
 });
 
 function startWebsocket() {
@@ -76,13 +80,13 @@ function startWebsocket() {
     console.log("data:", data);
 
     if (data.type === 'vertex') {
-      const {name} = data.obj;
-      state.data.vertices.push(vertexBuilder(name, "#ff0000"));
+      const {id, name, color} = data.obj;
+      state.data.vertices.push(vertexBuilder(id, name, color));
     } else if (data.type === 'edge') {
-      const {name, source, target, description} = data.obj;
+      const {id, name, source, target, description} = data.obj;
       // const source = findVertexNameById(data.obj.source);
       // const target = findVertexNameById(data.obj.target);
-      state.data.edges.push(edgeBuilder(name, source, target, description));
+      state.data.edges.push(edgeBuilder(id, name, source, target, description));
     }
 
     console.log("state:", state);
@@ -109,7 +113,8 @@ function prepareGraph() {
     // Criar os nós
   state.data.vertices.forEach(vertex => {
     nodes.push({
-      id: vertex.name,
+      id: vertex.id,
+      name: vertex.name,
       color: vertex.color,
     });
   });
@@ -134,6 +139,8 @@ function prepareGraph() {
   return(graph)
 }
 
+let gui = new GUI();
+
 function refreshGraph() {
   setTimeout(() => {
     function getQuadraticXY3D(t, sx, sy, sz, cp1x, cp1y, cp1z, ex, ey, ez) {
@@ -151,7 +158,9 @@ function refreshGraph() {
       };
     }
 
-    if (state.options.mode) {
+    gui.destroy();
+
+    if (state.options['3dMode']) {
       // const variables = this.getVariables();
 
       const graph = prepareGraph();
@@ -159,7 +168,7 @@ function refreshGraph() {
       let Graph = ForceGraph3D({
         extraRenderers: [new CSS2DRenderer()]
       })
-      (document.getElementById('3d-graph'))
+      (document.getElementById('graph'))
       // .width(document.getElementById('container').offsetWidth)
       // .height(document.getElementById('container').offsetHeight)
       Graph.nodeThreeObject(node => {
@@ -174,7 +183,7 @@ function refreshGraph() {
 
         const loader = new FontLoader();
         loader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', function (font) {
-          const textGeometry = new TextGeometry(node.id, {
+          const textGeometry = new TextGeometry(node.name, {
             font: font,
             size: 3,
             height: 0.5,
@@ -270,6 +279,13 @@ function refreshGraph() {
         })
       }
 
+      gui = new GUI();
+
+      gui.add( state.options, '3dMode' ).onChange( refreshGraph );
+      gui.add( state.options, 'particles' ).onChange( refreshGraph );
+      gui.add( state.options, 'focusNode' ).onChange( refreshGraph );
+      gui.add( state.options, 'textNode' ).onChange( refreshGraph );
+      gui.open();
     } else {
       // const variables = this.getVariables();
       const graph = prepareGraph();
@@ -286,13 +302,13 @@ function refreshGraph() {
           ctx.fill();
 
           // Estilizar o texto
-          ctx.fillStyle = 'white';
+          ctx.fillStyle = ['gray', 'white', 'yellow', 'beige'].includes(node.color) ? 'black' : 'white';
           ctx.font = 'bold 8px Arial';
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
 
           // Definir a letra a ser exibida
-          const letter = node.id;
+          const letter = node.name;
 
           // Posicionar o texto no centro do círculo
           ctx.fillText(letter, node.x, node.y);
@@ -356,6 +372,10 @@ function refreshGraph() {
         .linkDirectionalArrowRelPos(1)
         .graphData(graph);
 
+        gui = new GUI();
+
+				gui.add( state.options, '3dMode' ).onChange( refreshGraph );
+				gui.open();
     }
 
   }, 0o100);
