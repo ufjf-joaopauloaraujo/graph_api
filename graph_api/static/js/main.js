@@ -105,6 +105,7 @@ function startWebsocket() {
       if (data.type === 'vertex') {
         const {id} = data.obj;
         state.data.vertices = state.data.vertices.filter(v => v.id !== id);
+        state.data.edges = state.data.edges.filter(e => e.source !== id && e.target !== id);
       } else if (data.type === 'edge') {
         const {id} = data.obj;
         state.data.edges = state.data.edges.filter(v => v.id !== id);
