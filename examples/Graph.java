@@ -2,47 +2,98 @@ import java.util.*;
 import examples.GraphAPI;
 
 class Graph {
-    private Map<Integer, List<Integer>> adjacencyList;
+
+    class Node { // Nó
+
+        // API
+        long apiId;
+        String value;
+
+        public Node(String value) {
+            this.value = value;
+            apiId = GraphAPI.getInstance().postVertex(value);
+        }
+
+        @Override
+        public String toString() {
+            return value;
+        }
+    }
+
+    class Edge { // Aresta
+
+        // API
+        long apiId;
+        Node source;
+        Node destination;
+        String label;
+
+        public Edge(Node source, Node destination) {
+            this.source = source;
+            this.destination = destination;
+            this.label = "";
+            apiId = GraphAPI.getInstance().postEdge(source.apiId, destination.apiId);
+        }
+
+        public Edge(Node source, Node destination, String label) {
+            this.source = source;
+            this.destination = destination;
+            this.label = label;
+            apiId = GraphAPI.getInstance().postEdge(source.apiId, destination.apiId, label);
+        }
+    }
+
+    List<Node> nodes;
+    List<Edge> edges;
 
     public Graph() {
-        adjacencyList = new HashMap<>();
+        nodes = new ArrayList<>();
+        edges = new ArrayList<>();
     }
 
-    // Add a vertex (node) to the graph
-    public void addVertex(int vertex) {
-        adjacencyList.put(vertex, new ArrayList<>());
-        GraphAPI.getInstance().postVertex(vertex);
+    Node addVertex(String name) {
+        Node n = new Node(name);
+        nodes.add(n);
+        return n;
     }
 
-    // Add an edge between two vertices
-    public void addEdge(int source, int destination) {
-        adjacencyList.get(source).add(destination);
-        adjacencyList.get(destination).add(source); // For an undirected graph
-        GraphAPI.getInstance().postEdge(source, destination);
+    Edge addEdge(Node source, Node destination) {
+        return addEdge(source, destination, null);
+    }
+
+    Edge addEdge(Node source, Node destination, String label) {
+        Edge e = null == label ? new Edge(source, destination) : new Edge(source, destination, label);
+        edges.add(e);
+        return e;
     }
 
     // Print the adjacency list
     public void printGraph() {
-        for (Map.Entry<Integer, List<Integer>> entry : adjacencyList.entrySet()) {
-            System.out.print("Vertex " + entry.getKey() + " is connected to: ");
-            for (int neighbor : entry.getValue()) {
-                System.out.print(neighbor + " ");
-            }
-            System.out.println();
+        System.out.println("Nodes: ");
+        for (Node n : nodes) {
+            System.out.print(n + " ");
+        }
+        System.out.println();
+        System.out.println("**********");
+
+        System.out.println("Edges: ");
+        for (Edge e : edges) {
+            System.out.println(e.source + "-" + e.label + "-> " + e.destination);
         }
     }
 
     public static void main(String[] args) {
+        GraphAPI.getInstance().resetModel();
         Graph graph = new Graph();
-        graph.addVertex(1);
-        graph.addVertex(2);
-        graph.addVertex(3);
-        graph.addVertex(4);
+        Node n1 = graph.addVertex("1");
+        Node n2 = graph.addVertex("2");
+        Node n3 = graph.addVertex("3");
+        Node n4 = graph.addVertex("4");
 
-        graph.addEdge(1, 2);
-        graph.addEdge(2, 3);
-        graph.addEdge(3, 4);
-        graph.addEdge(4, 1);
+        graph.addEdge(n1, n2);
+        graph.addEdge(n2, n3);
+        graph.addEdge(n3, n4);
+        graph.addEdge(n4, n1);
 
         graph.printGraph();
     }

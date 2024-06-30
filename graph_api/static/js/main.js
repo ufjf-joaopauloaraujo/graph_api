@@ -79,15 +79,41 @@ function startWebsocket() {
     
     console.log("data:", data);
 
-    if (data.type === 'vertex') {
-      const {id, name, color} = data.obj;
-      state.data.vertices.push(vertexBuilder(id, name, color));
-    } else if (data.type === 'edge') {
-      const {id, name, source, target, description} = data.obj;
-      // const source = findVertexNameById(data.obj.source);
-      // const target = findVertexNameById(data.obj.target);
-      state.data.edges.push(edgeBuilder(id, name, source, target, description));
+    if (data.operation === 'create') {
+      if (data.type === 'vertex') {
+        const {id, name, color} = data.obj;
+        state.data.vertices.push(vertexBuilder(id, name, color));
+      } else if (data.type === 'edge') {
+        const {id, name, source, target, description} = data.obj;
+        state.data.edges.push(edgeBuilder(id, name, source, target, description));
+      }
+    } else if (data.operation === 'update') {
+      if (data.type === 'vertex') {
+        const {id, name, color} = data.obj;
+        const v = state.data.vertices.find(v => v.id === id);
+        v.name = name;
+        v.color = color;
+      } else if (data.type === 'edge') {
+        const {id, name, source, target, description} = data.obj;
+        const e = state.data.edges.find(e => e.id === id);
+        e.name = name;
+        e.source = source;
+        e.target = target;
+        e.description = description;
+      }
+    } else if (data.operation === 'delete') {
+      if (data.type === 'vertex') {
+        const {id} = data.obj;
+        state.data.vertices = state.data.vertices.filter(v => v.id !== id);
+      } else if (data.type === 'edge') {
+        const {id} = data.obj;
+        state.data.edges = state.data.edges.filter(v => v.id !== id);
+      } else if (data.type === 'all') {
+        state.data.vertices = [];
+        state.data.edges = [];
+      }
     }
+
 
     console.log("state:", state);
 
@@ -304,7 +330,7 @@ function refreshGraph() {
           ctx.fill();
 
           // Estilizar o texto
-          ctx.fillStyle = ['gray', 'white', 'yellow', 'beige'].includes(node.color) ? 'black' : 'white';
+          ctx.fillStyle = ['white', 'yellow', 'beige'].includes(node.color) ? 'black' : 'white';
           ctx.font = 'bold 8px Arial';
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
@@ -374,7 +400,7 @@ function refreshGraph() {
         .linkDirectionalArrowRelPos(1)
         .graphData(graph);
 
-        setTimeout(() => Graph.zoomToFit(5000, 100), 2000);
+        setTimeout(() => Graph.zoomToFit(1000, 100), 2000);
 
         gui = new GUI();
 
