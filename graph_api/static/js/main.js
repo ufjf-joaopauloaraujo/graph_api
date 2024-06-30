@@ -306,7 +306,11 @@ function refreshGraph() {
         })
       }
 
-      setTimeout(() => Graph.zoomToFit(5000, 1), 1500);
+      setTimeout(() => Graph.zoomToFit(1000, 1), 1500);
+
+      const guiSetup = {
+        'View all': () => Graph.zoomToFit(1000, 100),
+      };
 
       gui = new GUI();
 
@@ -314,6 +318,7 @@ function refreshGraph() {
       gui.add( state.options, 'particles' ).onChange( refreshGraph );
       gui.add( state.options, 'focusNode' ).onChange( refreshGraph );
       gui.add( state.options, 'textNode' ).onChange( refreshGraph );
+      gui.add(guiSetup, 'View all');
       gui.open();
     } else {
       // const variables = this.getVariables();
@@ -403,9 +408,14 @@ function refreshGraph() {
 
         setTimeout(() => Graph.zoomToFit(1000, 100), 2000);
 
+        const guiSetup = {
+          'View all': () => Graph.zoomToFit(1000, 100),
+        };
+
         gui = new GUI();
 
 				gui.add( state.options, '3dMode' ).onChange( refreshGraph );
+        gui.add(guiSetup, 'View all');
 				gui.open();
     }
 
