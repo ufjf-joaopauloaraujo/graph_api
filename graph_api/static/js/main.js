@@ -406,6 +406,12 @@ function refreshGraph() {
         .linkDirectionalArrowRelPos(1)
         .graphData(graph);
 
+        if (state.options.particles) {
+          Graph
+            .linkDirectionalParticles(3)
+            .linkDirectionalParticleSpeed(d => 0.01);
+        }
+
         setTimeout(() => Graph.zoomToFit(1000, 100), 2000);
 
         const guiSetup = {
@@ -415,6 +421,7 @@ function refreshGraph() {
         gui = new GUI();
 
 				gui.add( state.options, '3dMode' ).onChange( refreshGraph );
+				gui.add( state.options, 'particles' ).onChange( refreshGraph );
         gui.add(guiSetup, 'Restart camera');
 				gui.open();
     }
