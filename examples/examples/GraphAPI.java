@@ -4,7 +4,13 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.net.http.HttpResponse.BodyHandlers;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Matcher;
@@ -49,11 +55,11 @@ public class GraphAPI {
         return "GET response for " + API_URL;
     }
 
-    public Long postVertex(String name) {
-        return postVertex(name, VertexColor.WHITE);
+    public Long createVertex(String name) {
+        return createVertex(name, VertexColor.WHITE);
     }
 
-    public Long postVertex(String name, VertexColor color) {
+    public Long createVertex(String name, VertexColor color) {
         try {
             URL apiUrl = new URL(VERTEX_API_URL);
             HttpURLConnection connection = (HttpURLConnection) apiUrl.openConnection();
@@ -65,13 +71,13 @@ public class GraphAPI {
 
             // Write request body
             try (OutputStream os = connection.getOutputStream()) {
-                byte[] input = requestBody.getBytes("utf-8");
+                byte[] input = requestBody.getBytes(StandardCharsets.UTF_8);
                 os.write(input, 0, input.length);
             }
 
             // Read response
             try (BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(connection.getInputStream(), "utf-8"))) {
+                    new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8))) {
                 StringBuilder response = new StringBuilder();
                 String line;
                 while ((line = reader.readLine()) != null) {
@@ -84,11 +90,68 @@ public class GraphAPI {
         }
     }
 
-    public Long postEdge(Long source, Long target) {
-        return postEdge(source, target, "");
+    public void updateVertex(long id, String name, VertexColor color) {
+        try {
+            StringBuilder body = new StringBuilder();
+            body.append("{");
+            if (null != name) {
+                body.append(String.format("\"name\": \"%s\"", name));
+                if (null != color) {
+                    body.append(", ");
+                }
+            }
+            if (null != color) {
+                body.append(String.format("\"color\": \"%s\"", color));
+            }
+            body.append("}");
+
+            String requestBody = body.toString();
+
+            HttpClient client = HttpClient.newHttpClient();
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(VERTEX_API_URL + id + "/"))
+                    .header("Content-Type", "application/json")
+                    .method("PATCH", HttpRequest.BodyPublishers.ofString(requestBody))
+                    .build();
+
+            HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public Long postEdge(Long source, Long target, String description) {
+    public void deleteVertex(long id) {
+        try {
+            URL apiUrl = new URL(VERTEX_API_URL + id + "/");
+            HttpURLConnection connection = (HttpURLConnection) apiUrl.openConnection();
+            connection.setRequestMethod("DELETE");
+            connection.setDoOutput(true);
+
+            // Write request body
+            try (OutputStream os = connection.getOutputStream()) {
+                os.write(new byte[0], 0, 0);
+            }
+
+            // Read response
+            try (BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8))) {
+                StringBuilder response = new StringBuilder();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    response.append(line);
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public Long createEdge(long sourceId, long targetId) {
+        return createEdge(sourceId, targetId, "");
+    }
+
+    public Long createEdge(long sourceId, long targetId, String description) {
         try {
             URL apiUrl = new URL(EDGE_API_URL);
             HttpURLConnection connection = (HttpURLConnection) apiUrl.openConnection();
@@ -98,17 +161,17 @@ public class GraphAPI {
 
             String requestBody = String.format(
                 "{ \"source\": %d, \"target\": %d, \"description\": \"%s\" }",
-                source, target, description); // TODO: how to deal with IDs
+                sourceId, targetId, description);
 
             // Write request body
             try (OutputStream os = connection.getOutputStream()) {
-                byte[] input = requestBody.getBytes("utf-8");
+                byte[] input = requestBody.getBytes(StandardCharsets.UTF_8);
                 os.write(input, 0, input.length);
             }
 
             // Read response
             try (BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(connection.getInputStream(), "utf-8"))) {
+                    new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8))) {
                 StringBuilder response = new StringBuilder();
                 String line;
                 while ((line = reader.readLine()) != null) {
@@ -121,8 +184,68 @@ public class GraphAPI {
         }
     }
 
-    // Other methods for handling REST requests go here
-    // ...
+    public void updateEdge(long id, Long sourceId, Long targetId, String description) {
+        try {
+            StringBuilder body = new StringBuilder();
+            body.append("{");
+            if (null != sourceId) {
+                body.append(String.format("\"source\": %d", sourceId));
+                if (null != targetId || null != description) {
+                    body.append(", ");
+                }
+            }
+            if (null != targetId) {
+                body.append(String.format("\"target\": %d", targetId));
+                if (null != description) {
+                    body.append(", ");
+                }
+            }
+            if (null != description) {
+                body.append(String.format("\"description\": \"%s\"", description));
+            }
+            body.append("}");
+
+            String requestBody = body.toString();
+
+            HttpClient client = HttpClient.newHttpClient();
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(EDGE_API_URL + id + "/"))
+                    .header("Content-Type", "application/json")
+                    .method("PATCH", HttpRequest.BodyPublishers.ofString(requestBody))
+                    .build();
+
+            HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void deleteEdge(long id) {
+        try {
+            URL apiUrl = new URL(EDGE_API_URL + id + "/");
+            HttpURLConnection connection = (HttpURLConnection) apiUrl.openConnection();
+            connection.setRequestMethod("DELETE");
+            connection.setDoOutput(true);
+
+            // Write request body
+            try (OutputStream os = connection.getOutputStream()) {
+                os.write(new byte[0], 0, 0);
+            }
+
+            // Read response
+            try (BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8))) {
+                StringBuilder response = new StringBuilder();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    response.append(line);
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public void resetModel() {
         try {
@@ -138,7 +261,7 @@ public class GraphAPI {
 
             // Read response
             try (BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(connection.getInputStream(), "utf-8"))) {
+                    new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8))) {
                 StringBuilder response = new StringBuilder();
                 String line;
                 while ((line = reader.readLine()) != null) {

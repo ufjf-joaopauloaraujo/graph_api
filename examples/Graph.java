@@ -11,7 +11,7 @@ class Graph {
 
         public Node(String value) {
             this.value = value;
-            apiId = GraphAPI.getInstance().postVertex(value);
+            apiId = GraphAPI.getInstance().createVertex(value);
         }
 
         @Override
@@ -32,14 +32,14 @@ class Graph {
             this.source = source;
             this.destination = destination;
             this.label = "";
-            apiId = GraphAPI.getInstance().postEdge(source.apiId, destination.apiId);
+            apiId = GraphAPI.getInstance().createEdge(source.apiId, destination.apiId);
         }
 
         public Edge(Node source, Node destination, String label) {
             this.source = source;
             this.destination = destination;
             this.label = label;
-            apiId = GraphAPI.getInstance().postEdge(source.apiId, destination.apiId, label);
+            apiId = GraphAPI.getInstance().createEdge(source.apiId, destination.apiId, label);
         }
     }
 
@@ -90,10 +90,23 @@ class Graph {
         Node n3 = graph.addVertex("3");
         Node n4 = graph.addVertex("4");
 
-        graph.addEdge(n1, n2);
-        graph.addEdge(n2, n3);
-        graph.addEdge(n3, n4);
-        graph.addEdge(n4, n1);
+        Edge e1 = graph.addEdge(n1, n2);
+        Edge e2 = graph.addEdge(n2, n3);
+        Edge e3 = graph.addEdge(n3, n4);
+        Edge e4 = graph.addEdge(n4, n1);
+
+        GraphAPI.getInstance().updateVertex(n1.apiId, null, GraphAPI.VertexColor.RED);
+        GraphAPI.getInstance().updateVertex(n2.apiId, "5", GraphAPI.VertexColor.BLUE);
+        GraphAPI.getInstance().updateVertex(n3.apiId, null, GraphAPI.VertexColor.YELLOW);
+        GraphAPI.getInstance().updateVertex(n4.apiId, "6", null);
+
+        GraphAPI.getInstance().updateEdge(e1.apiId, null, null, "a");
+        GraphAPI.getInstance().updateEdge(e2.apiId, null, n4.apiId, "b");
+        GraphAPI.getInstance().updateEdge(e3.apiId, n1.apiId, null, "c");
+        GraphAPI.getInstance().updateEdge(e4.apiId, n1.apiId, n3.apiId, "d");
+
+        GraphAPI.getInstance().deleteVertex(n2.apiId);
+        GraphAPI.getInstance().deleteEdge(e3.apiId);
 
         graph.printGraph();
     }

@@ -213,7 +213,7 @@ function refreshGraph() {
           const textGeometry = new TextGeometry(node.name, {
             font: font,
             size: 3,
-            height: 0.5,
+            depth: 0.5,
             curveSegments: 12,
             bevelEnabled: false
           });
