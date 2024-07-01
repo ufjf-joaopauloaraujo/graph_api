@@ -275,7 +275,7 @@ function refreshGraph() {
 
       if (state.options.particles) {
         Graph
-          .linkDirectionalParticles("target")
+          .linkDirectionalParticles(3)
           .linkDirectionalParticleSpeed(d => 0.01)
           .cameraPosition({z: 90})
 
