@@ -67,6 +67,8 @@ edgesData.forEach(edge => {
   state.data.edges.push(edgeBuilder(id, name, source_id, target_id, description));
 });
 
+var refreshGraphTimeout = null;
+
 function startWebsocket() {
   let socket = new WebSocket('ws://' + window.location.host + '/ws/graph/');
 
@@ -118,7 +120,10 @@ function startWebsocket() {
 
     console.log("state:", state);
 
-    refreshGraph();
+    if (refreshGraphTimeout !== null) {
+      clearInterval(refreshGraphTimeout);
+    }
+    refreshGraphTimeout = setTimeout(() => refreshGraph(), 500);
   };
 
   socket.onclose = (event) => {
