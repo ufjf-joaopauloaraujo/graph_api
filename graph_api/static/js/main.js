@@ -43,7 +43,7 @@ const state = {
   },
   options: {
     '3dMode': false, // true: 3D; false: 2D
-    particles: true,
+    particles: false,
     focusNode: false,
     textNode: false,
   }
@@ -54,20 +54,12 @@ verticesData.forEach(vertex => {
   state.data.vertices.push(vertexBuilder(id, name, color));
 });
 
-function findVertexNameById(name) {
-  return state.data.vertices.find(v => v.name === name);
-}
-
 edgesData.forEach(edge => {
   const {id, name, source_id, target_id, description} = edge;
-
-  // const source = findVertexNameById(source_id);
-  // const target = findVertexNameById(target_id);
-
   state.data.edges.push(edgeBuilder(id, name, source_id, target_id, description));
 });
 
-var refreshGraphTimeout = null;
+let refreshGraphTimeout = null;
 
 function startWebsocket() {
   let socket = new WebSocket('ws://' + window.location.host + '/ws/graph/');
@@ -117,7 +109,6 @@ function startWebsocket() {
       }
     }
 
-
     console.log("state:", state);
 
     if (refreshGraphTimeout !== null) {
@@ -155,7 +146,7 @@ function prepareGraph() {
   state.data.edges.forEach(edge => {
     if (edge) {
       links.push({
-        curvature: 0.3,
+        curvature: edge.curvature || 0.3,
         ...edge,
         label: edge.description,
       });
@@ -193,14 +184,13 @@ function refreshGraph() {
     gui.destroy();
 
     if (state.options['3dMode']) {
-      // const variables = this.getVariables();
 
       const graph = prepareGraph();
 
       let Graph = ForceGraph3D({
         extraRenderers: [new CSS2DRenderer()]
       })
-      (document.getElementById('graph'))
+      (document.getElementById('graph'));
       // .width(document.getElementById('container').offsetWidth)
       // .height(document.getElementById('container').offsetHeight)
       Graph.nodeThreeObject(node => {
@@ -254,7 +244,6 @@ function refreshGraph() {
           return sprite;
         })
         .linkPositionUpdate((sprite, {start, end}, link) => {
-
           let middlePos = getQuadraticXY3D(
             0.5,
             start.x,
@@ -270,8 +259,6 @@ function refreshGraph() {
 
           // Position sprite
           Object.assign(sprite.position, middlePos);
-
-
         })
         .linkDirectionalArrowLength(2)
         .linkDirectionalArrowRelPos(1)
@@ -311,7 +298,7 @@ function refreshGraph() {
         })
       }
 
-      setTimeout(() => Graph.zoomToFit(1000, 1), 1500);
+      setTimeout(() => Graph.zoomToFit(1000, 1), 1000);
 
       const guiSetup = {
         'Restart camera': () => Graph.zoomToFit(1000, 100),
@@ -326,7 +313,6 @@ function refreshGraph() {
       gui.add(guiSetup, 'Restart camera');
       gui.open();
     } else {
-      // const variables = this.getVariables();
       const graph = prepareGraph();
 
       const Graph = ForceGraph()
@@ -355,7 +341,7 @@ function refreshGraph() {
         })
         .linkDirectionalArrowLength(2)
         .linkCurvature(0.3)
-        .zoom(15, 50)
+        .zoom(10, 50)
         .linkCanvasObjectMode(() => 'after')
         .linkCanvasObject((link, ctx) => {
           const MAX_FONT_SIZE = 4;
@@ -434,4 +420,4 @@ function refreshGraph() {
   }, 0o100);
 }
 
-refreshGraph()
+refreshGraph();
