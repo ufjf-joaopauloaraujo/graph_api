@@ -263,13 +263,13 @@ function refreshGraph() {
         .linkDirectionalArrowLength(2)
         .linkDirectionalArrowRelPos(1)
         .linkCurvature('curvature')
-        .cameraPosition({z: 90})
+        .cameraPosition({z: 300})
 
       if (state.options.particles) {
         Graph
           .linkDirectionalParticles(3)
           .linkDirectionalParticleSpeed(d => 0.01)
-          .cameraPosition({z: 90})
+          .cameraPosition({z: 300})
 
       }
       if (state.options.focusNode) {
@@ -301,7 +301,7 @@ function refreshGraph() {
       setTimeout(() => Graph.zoomToFit(1000, 1), 1000);
 
       const guiSetup = {
-        'Restart camera': () => Graph.zoomToFit(1000, 100),
+        'Restart camera': () => Graph.zoomToFit(1000, 1),
       };
 
       gui = new GUI();
@@ -341,7 +341,7 @@ function refreshGraph() {
         })
         .linkDirectionalArrowLength(2)
         .linkCurvature(0.3)
-        .zoom(10, 50)
+        .zoom(5, 50)
         .linkCanvasObjectMode(() => 'after')
         .linkCanvasObject((link, ctx) => {
           const MAX_FONT_SIZE = 4;
