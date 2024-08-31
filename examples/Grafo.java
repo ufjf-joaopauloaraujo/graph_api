@@ -6,18 +6,23 @@ import examples.GraphAPI.VertexColor;
 class Grafo {
     private int V; // Número de vértices
     private LinkedList<Integer> adj[]; // Lista de adjacência
+
+    private long[] vIds; // lista de ids dos vértices
     // Construtor
     Grafo(int v) {
         V = v;
         adj = new LinkedList[v];
+        vIds = new long[v];
         for (int i=0; i<v; ++i){
             adj[i] = new LinkedList<>();
+            vIds[i] = GraphAPI.getInstance().createVertex(Integer.toString(i));
         }
     }
 
     // Função para adicionar uma aresta ao grafo
     void addAresta(int v, int w) {
         adj[v].add(w); // Adiciona w à lista de v
+        GraphAPI.getInstance().createEdge(vIds[v], vIds[w]);
     }
 
     // Função para realizar a busca em profundidade a partir de um vértice v
@@ -25,6 +30,7 @@ class Grafo {
         // Marca o vértice atual como visitado e imprime
         visitado[v] = true;
         System.out.print(v + " ");
+        GraphAPI.getInstance().updateVertex(vIds[v], null, VertexColor.GREEN);
 
         // Recurso para todos os vértices adjacentes ao vértice atual
         Iterator<Integer> it = adj[v].listIterator();
@@ -54,6 +60,7 @@ class Grafo {
 
         // Marca o vértice atual como visitado e o adiciona à fila
         visitado[s] = true;
+        GraphAPI.getInstance().updateVertex(vIds[s], null, VertexColor.GREEN);
         fila.add(s);
 
         while (fila.size() != 0) {
@@ -68,6 +75,7 @@ class Grafo {
                 // Se um vértice adjacente ainda não foi visitado, marca como visitado e o adiciona à fila
                 if (!visitado[n]) {
                     visitado[n] = true;
+                    GraphAPI.getInstance().updateVertex(vIds[n], null, VertexColor.GREEN);
                     fila.add(n);
                 }
             }
@@ -75,6 +83,7 @@ class Grafo {
     }
 
     public static void main(String args[]) {
+        GraphAPI.getInstance().resetModel();
         Grafo g = new Grafo(8);
 
         g.addAresta(0, 1);
