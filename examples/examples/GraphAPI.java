@@ -26,6 +26,8 @@ public class GraphAPI {
     private static GraphAPI instance;
     private final Lock lock = new ReentrantLock(); // For synchronization
 
+    private long delay = 0; // in ms
+
     // Private constructor to prevent direct instantiation
     private GraphAPI() {
     }
@@ -40,6 +42,20 @@ public class GraphAPI {
             }
         }
         return instance;
+    }
+
+    public void setDelay(long delay) {
+        this.delay = delay;
+    }
+
+    public void waitForDelay() {
+        if (delay > 0) {
+            try {
+                Thread.sleep(delay);
+            } catch (InterruptedException ignored) {
+                // ignoring
+            }
+        }
     }
 
     static long getIdFromResponse(String response) {
@@ -60,6 +76,8 @@ public class GraphAPI {
     }
 
     public Long createVertex(String name, VertexColor color) {
+        waitForDelay();
+
         try {
             URL apiUrl = new URL(VERTEX_API_URL);
             HttpURLConnection connection = (HttpURLConnection) apiUrl.openConnection();
@@ -91,6 +109,8 @@ public class GraphAPI {
     }
 
     public void updateVertex(long id, String name, VertexColor color) {
+        waitForDelay();
+
         try {
             StringBuilder body = new StringBuilder();
             body.append("{");
@@ -122,6 +142,8 @@ public class GraphAPI {
     }
 
     public void deleteVertex(long id) {
+        waitForDelay();
+
         try {
             URL apiUrl = new URL(VERTEX_API_URL + id + "/");
             HttpURLConnection connection = (HttpURLConnection) apiUrl.openConnection();
@@ -152,6 +174,8 @@ public class GraphAPI {
     }
 
     public Long createEdge(long sourceId, long targetId, String description) {
+        waitForDelay();
+
         try {
             URL apiUrl = new URL(EDGE_API_URL);
             HttpURLConnection connection = (HttpURLConnection) apiUrl.openConnection();
@@ -185,6 +209,8 @@ public class GraphAPI {
     }
 
     public void updateEdge(long id, Long sourceId, Long targetId, String description) {
+        waitForDelay();
+
         try {
             StringBuilder body = new StringBuilder();
             body.append("{");
@@ -222,6 +248,8 @@ public class GraphAPI {
     }
 
     public void deleteEdge(long id) {
+        waitForDelay();
+
         try {
             URL apiUrl = new URL(EDGE_API_URL + id + "/");
             HttpURLConnection connection = (HttpURLConnection) apiUrl.openConnection();
@@ -248,6 +276,8 @@ public class GraphAPI {
     }
 
     public void resetModel() {
+        waitForDelay();
+        
         try {
             URL apiUrl = new URL(VERTEX_API_URL + "all/");
             HttpURLConnection connection = (HttpURLConnection) apiUrl.openConnection();
