@@ -27,6 +27,7 @@ public class GraphAPI {
     private final Lock lock = new ReentrantLock(); // For synchronization
 
     private long delay = 0; // in ms
+    private boolean disabled = false;
 
     // Private constructor to prevent direct instantiation
     private GraphAPI() {
@@ -46,6 +47,10 @@ public class GraphAPI {
 
     public void setDelay(long delay) {
         this.delay = delay;
+    }
+
+    public void disable() {
+        this.disabled = true;
     }
 
     public void waitForDelay() {
@@ -76,6 +81,7 @@ public class GraphAPI {
     }
 
     public Long createVertex(String name, VertexColor color) {
+        if (disabled) return 0L;
         waitForDelay();
 
         try {
@@ -109,6 +115,7 @@ public class GraphAPI {
     }
 
     public void updateVertex(long id, String name, VertexColor color) {
+        if (disabled) return;
         waitForDelay();
 
         try {
@@ -142,6 +149,7 @@ public class GraphAPI {
     }
 
     public void deleteVertex(long id) {
+        if (disabled) return;
         waitForDelay();
 
         try {
@@ -174,6 +182,7 @@ public class GraphAPI {
     }
 
     public Long createEdge(long sourceId, long targetId, String description) {
+        if (disabled) return 0L;
         waitForDelay();
 
         try {
@@ -209,6 +218,7 @@ public class GraphAPI {
     }
 
     public void updateEdge(long id, Long sourceId, Long targetId, String description) {
+        if (disabled) return;
         waitForDelay();
 
         try {
@@ -248,6 +258,7 @@ public class GraphAPI {
     }
 
     public void deleteEdge(long id) {
+        if (disabled) return;
         waitForDelay();
 
         try {
@@ -276,8 +287,9 @@ public class GraphAPI {
     }
 
     public void resetModel() {
+        if (disabled) return;
         waitForDelay();
-        
+
         try {
             URL apiUrl = new URL(VERTEX_API_URL + "all/");
             HttpURLConnection connection = (HttpURLConnection) apiUrl.openConnection();

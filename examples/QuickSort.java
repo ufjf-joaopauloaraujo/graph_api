@@ -49,6 +49,7 @@ public class QuickSort {
       // reiniciando representação gráfica
       GraphAPI.getInstance().resetModel();
       GraphAPI.getInstance().setDelay(3000); // adiciona delay
+    //   GraphAPI.getInstance().disable();
 
       int[] arr = {10, 7, 8, 9, 1, 5};
       int n = arr.length;
