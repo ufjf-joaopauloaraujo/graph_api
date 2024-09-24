@@ -1,0 +1,371 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Snippets API",
+    "description": "Test description",
+    "termsOfService": "https://www.google.com/policies/terms/",
+    "contact": {
+      "email": "contact@snippets.local"
+    },
+    "license": {
+      "name": "BSD License"
+    },
+    "version": "v1"
+  },
+  "host": "127.0.0.1:8000",
+  "schemes": [
+    "http"
+  ],
+  "basePath": "/api",
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "securityDefinitions": {
+    "Basic": {
+      "type": "basic"
+    }
+  },
+  "security": [
+    {
+      "Basic": []
+    }
+  ],
+  "paths": {
+    "/edges/": {
+      "get": {
+        "operationId": "edges_list",
+        "description": "",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Edge"
+              }
+            }
+          }
+        },
+        "tags": [
+          "edges"
+        ]
+      },
+      "post": {
+        "operationId": "edges_create",
+        "description": "",
+        "parameters": [
+          {
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Edge"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Edge"
+            }
+          }
+        },
+        "tags": [
+          "edges"
+        ]
+      },
+      "parameters": []
+    },
+    "/edges/{id}/": {
+      "get": {
+        "operationId": "edges_read",
+        "description": "",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Edge"
+            }
+          }
+        },
+        "tags": [
+          "edges"
+        ]
+      },
+      "put": {
+        "operationId": "edges_update",
+        "description": "",
+        "parameters": [
+          {
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Edge"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Edge"
+            }
+          }
+        },
+        "tags": [
+          "edges"
+        ]
+      },
+      "patch": {
+        "operationId": "edges_partial_update",
+        "description": "",
+        "parameters": [
+          {
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Edge"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Edge"
+            }
+          }
+        },
+        "tags": [
+          "edges"
+        ]
+      },
+      "delete": {
+        "operationId": "edges_delete",
+        "description": "",
+        "parameters": [],
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "edges"
+        ]
+      },
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "description": "A unique integer value identifying this edge.",
+          "required": true,
+          "type": "integer"
+        }
+      ]
+    },
+    "/vertices/": {
+      "get": {
+        "operationId": "vertices_list",
+        "description": "",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Vertex"
+              }
+            }
+          }
+        },
+        "tags": [
+          "vertices"
+        ]
+      },
+      "post": {
+        "operationId": "vertices_create",
+        "description": "",
+        "parameters": [
+          {
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Vertex"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Vertex"
+            }
+          }
+        },
+        "tags": [
+          "vertices"
+        ]
+      },
+      "parameters": []
+    },
+    "/vertices/{id}/": {
+      "get": {
+        "operationId": "vertices_read",
+        "description": "",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Vertex"
+            }
+          }
+        },
+        "tags": [
+          "vertices"
+        ]
+      },
+      "put": {
+        "operationId": "vertices_update",
+        "description": "",
+        "parameters": [
+          {
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Vertex"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Vertex"
+            }
+          }
+        },
+        "tags": [
+          "vertices"
+        ]
+      },
+      "patch": {
+        "operationId": "vertices_partial_update",
+        "description": "",
+        "parameters": [
+          {
+            "name": "data",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Vertex"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/Vertex"
+            }
+          }
+        },
+        "tags": [
+          "vertices"
+        ]
+      },
+      "delete": {
+        "operationId": "vertices_delete",
+        "description": "",
+        "parameters": [],
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "vertices"
+        ]
+      },
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "description": "A unique integer value identifying this vertex.",
+          "required": true,
+          "type": "integer"
+        }
+      ]
+    }
+  },
+  "definitions": {
+    "Edge": {
+      "required": [
+        "source",
+        "target"
+      ],
+      "type": "object",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "integer",
+          "readOnly": true
+        },
+        "name": {
+          "title": "Name",
+          "type": "string",
+          "maxLength": 150
+        },
+        "description": {
+          "title": "Description",
+          "type": "string",
+          "maxLength": 50
+        },
+        "source": {
+          "title": "Source",
+          "type": "integer"
+        },
+        "target": {
+          "title": "Target",
+          "type": "integer"
+        }
+      }
+    },
+    "Vertex": {
+      "required": [
+        "name"
+      ],
+      "type": "object",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "integer",
+          "readOnly": true
+        },
+        "name": {
+          "title": "Name",
+          "type": "string",
+          "maxLength": 50,
+          "minLength": 1
+        },
+        "color": {
+          "title": "Color",
+          "type": "string",
+          "maxLength": 7,
+          "minLength": 1
+        }
+      }
+    }
+  }
+}
